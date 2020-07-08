@@ -13,15 +13,17 @@ from tushare.stock import cons as ct
 from tushare.stock import ref_vars as rv
 import json
 import re
-from pandas.util.testing import _network_error_classes
+# from pandas.util.testing import _network_error_classes
 import time
 import tushare.stock.fundamental as fd
 from tushare.util.netbase import Client
 
 try:
     from urllib.request import urlopen, Request
+    from urllib import error
 except ImportError:
     from urllib2 import urlopen, Request
+    from urllib2 import error
 
 
 def get_industry_classified(standard='sina'):
@@ -197,7 +199,9 @@ def _get_detail(tag, retry_count=3, pause=0.001):
                                                                    p,tag))
                 text = urlopen(request, timeout=10).read()
                 text = text.decode('gbk')
-            except _network_error_classes:
+            # except _network_error_classes:
+            #     pass
+            except error.HTTPError:
                 pass
             else:
                 break
