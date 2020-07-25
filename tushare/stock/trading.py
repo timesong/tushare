@@ -111,21 +111,21 @@ def _parsing_dayprice_json(types=None, page=1):
         DataFrame 当日所有股票交易数据(DataFrame)
     """
     ct._write_console()
-    request = Request(ct.SINA_DAY_PRICE_URL%(ct.P_TYPE['http'], ct.DOMAINS['vsf'],
-                                 ct.PAGES['jv'], types, page))
+    url = ct.SINA_DAY_PRICE_URL % (ct.P_TYPE['http'], ct.DOMAINS['vsf'], ct.PAGES['jv'], types, page)
+    request = Request(url)
     text = urlopen(request, timeout=10).read()
     if text == 'null':
         return None
-    reg = re.compile(r'\,(.*?)\:') 
-    text = reg.sub(r',"\1":', text.decode('gbk') if ct.PY3 else text) 
-    text = text.replace('"{symbol', '{"symbol')
-    text = text.replace('{symbol', '{"symbol"')
-    if ct.PY3:
-        jstr = json.dumps(text)
-    else:
-        jstr = json.dumps(text, encoding='GBK')
-    js = json.loads(jstr)
-    df = pd.DataFrame(pd.read_json(js, dtype={'code':object}),
+    # reg = re.compile(r'\,(.*?)\:') 
+    # text = reg.sub(r',"\1":', text.decode('gbk') if ct.PY3 else text) 
+    # text = text.replace('"{symbol', '{"symbol')
+    # text = text.replace('{symbol', '{"symbol"')
+    # if ct.PY3:
+    #     jstr = json.dumps(text)
+    # else:
+    #     jstr = json.dumps(text, encoding='GBK')
+    # js = json.loads(jstr)
+    df = pd.DataFrame(pd.read_json(text, dtype={'code': 'object'}),
                       columns=ct.DAY_TRADING_COLUMNS)
     df = df.drop('symbol', axis=1)
 #     df = df.ix[df.volume > 0]
